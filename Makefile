@@ -1,22 +1,31 @@
 # Default target
 .PHONY: run
 run: build
-	./mosaic
+	./bin/mosaic
 
 # Target for building the project
 .PHONY: build
 build: 
 ifeq ($(OS),Windows_NT)
-	gcc -std=c99 -Wall -o mosaic.exe ./main.c
+	gcc -std=c99 -Wall -o bin/mosaic.exe ./main.c
 else
-	gcc -std=c99 -Wall -o mosaic ./main.c
+	gcc -std=c99 -Wall -o bin/mosaic ./main.c
+endif
+
+# Target for building the project
+.PHONY: release
+release: 
+ifeq ($(OS),Windows_NT)
+	gcc -std=c99 -O2 -Wall -o bin/mosaic.exe ./main.c
+else
+	gcc -std=c99 -O2 -Wall -o bin/mosaic ./main.c
 endif
 
 # Target for cleaning up
 .PHONY: clean
 clean:
 ifeq ($(OS),Windows_NT)
-	del mosaic.exe
+	del bin/mosaic.exe
 else
-	rm ./mosaic
+	rm ./bin/mosaic
 endif
