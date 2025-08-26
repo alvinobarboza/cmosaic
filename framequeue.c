@@ -46,17 +46,16 @@ void framequeue_enqueue(FrameQueue *fm, uint8_t *data) {
     fm->size += 1;
 }
 
-uint8_t *framequeue_dequeue(FrameQueue *fm) {
+bool framequeue_dequeue(FrameQueue *fm, uint8_t *data) {
     if (fm->size == 0)
     {
-        return NULL;
+        return false;
     }
 
-    uint8_t *data = malloc(sizeof(uint8_t)*fm->frame_size);
     memcpy(data, fm->queue[fm->head], fm->frame_size);
 
     fm->head = (fm->head + 1) % fm->capacity;
     fm->size -= 1;
 
-    return data;
+    return true;
 }

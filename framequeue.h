@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_FRAME_QUEUE 15
 #define MIN_FRAME_QUEUE 3
@@ -19,4 +20,4 @@ typedef struct FrameQueue {
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size);
 void framequeue_free(FrameQueue *fm);
 void framequeue_enqueue(FrameQueue *fm, uint8_t *data);
-uint8_t *framequeue_dequeue(FrameQueue *fm);
+bool framequeue_dequeue(FrameQueue *fm, uint8_t *data);
