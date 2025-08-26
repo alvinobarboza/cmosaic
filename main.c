@@ -1,4 +1,8 @@
+#include "framequeue.h"
+
 int main(void) {
+    srand(time(NULL));
+
     uint8_t frame_size = 4;
 
     FrameQueue *fm = framequeue_new(3, frame_size);
@@ -21,7 +25,7 @@ int main(void) {
                     if (j % 10 == 0) {
                         printf("%02d\n", j);
                     }
-                    printf("p: %03d ",data[j]);
+                    printf("rgb: %03d ",data[j]);
                 }
                 free(data);
             }

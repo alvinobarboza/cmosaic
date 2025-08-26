@@ -1,14 +1,4 @@
-#define MAX_FRAME_QUEUE 15
-#define MIN_FRAME_QUEUE 3
-
-typedef struct FrameQueue {
-    uint8_t capacity;
-    uint8_t head;
-    uint8_t tail;
-    uint8_t size;
-    uint8_t **queue;
-    uint32_t frame_size;
-} FrameQueue;
+#include "framequeue.h"
 
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     buffer_size = buffer_size < MIN_FRAME_QUEUE ? MIN_FRAME_QUEUE : buffer_size;
