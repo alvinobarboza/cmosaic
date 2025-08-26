@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 #define MAX_FRAME_QUEUE 15
 #define MIN_FRAME_QUEUE 3

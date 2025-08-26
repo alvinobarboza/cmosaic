@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <time.h>
 #include "framequeue.h"
 
 int main(void) {
