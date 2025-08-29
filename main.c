@@ -2,9 +2,16 @@
 #include <time.h>
 #include "framequeue.h"
 #include "framebuffer.h"
+#include "configreader.h"
 
 int main(void) {
     srand(time(NULL));
+
+    ConfigFile *cf = read_config();
+
+    printf("%d \n\n",cf->type);
+
+    free(cf);
 
     uint32_t frame_size = 1920*1080;
 
@@ -12,16 +19,16 @@ int main(void) {
     FrameBuffer *fb = framebuffer_new(frame_size, fq);
     uint8_t *frame_data = malloc(sizeof(uint8_t) * frame_size);
 
-    for (int i = 0; i < 1000; i++)
+    for (uint32_t i = 0; i < 1; i++)
     {
-        for(int j = 0; j < frame_size; j++){
+        for(uint32_t j = 0; j < frame_size; j++){
             uint8_t r = rand() % 250;
             framebuffer_write_data(fb, r);
         }
 
         if (i % 2 == 0) {
             if(framequeue_dequeue(fq, frame_data)){
-                for(int j = 0; j < frame_size; j++){
+                for(uint32_t j = 0; j < frame_size; j++){
                     printf("rgb: %03d \r",frame_data[j]);
                 }
             }
