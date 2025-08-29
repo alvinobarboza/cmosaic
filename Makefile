@@ -7,18 +7,18 @@ run: build
 .PHONY: build
 build: 
 ifeq ($(OS),Windows_NT)
-	gcc -std=c99 -Wall -o bin/mosaic.exe ./all.c
+	gcc -std=c99 -Wall -Wextra -o bin/mosaic.exe ./all.c
 else
-	gcc -std=c99 -Wall -o bin/mosaic ./all.c
+	gcc -std=c99 -Wall -Wextra -o bin/mosaic ./all.c
 endif
 
 # Target for building the project
 .PHONY: release
 release: 
 ifeq ($(OS),Windows_NT)
-	gcc -std=c99 -O2 -Wall -o bin/mosaic.exe ./all.c
+	gcc -std=c99 -O2 -Wall -Wextra -o bin/mosaic.exe ./all.c
 else
-	gcc -std=c99 -O2 -Wall -o bin/mosaic ./all.c
+	gcc -std=c99 -O2 -Wall -Wextra -o bin/mosaic ./all.c
 endif
 
 # Target for cleaning up
