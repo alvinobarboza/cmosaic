@@ -1,0 +1,9 @@
+type = 2
+
+[[videos]]
+name = "teste"
+source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+
+[[videos]]
+name = "teste"
+source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
