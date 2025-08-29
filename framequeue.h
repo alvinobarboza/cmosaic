@@ -4,17 +4,19 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
+#include <pthread.h>
 
 #define MAX_FRAME_QUEUE 15
 #define MIN_FRAME_QUEUE 3
 
 typedef struct FrameQueue {
-    uint8_t     capacity;
-    uint8_t     head;
-    uint8_t     tail;
-    uint8_t     size;
-    uint8_t     **queue;
-    uint32_t    frame_size;
+    uint8_t         capacity;
+    uint8_t         head;
+    uint8_t         tail;
+    uint8_t         size;
+    uint8_t         **queue;
+    uint32_t        frame_size;
+    pthread_mutex_t lock;
 } FrameQueue;
 
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size);

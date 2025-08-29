@@ -3,59 +3,70 @@
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     buffer_size = buffer_size < MIN_FRAME_QUEUE ? MIN_FRAME_QUEUE : buffer_size;
 
-    FrameQueue *fm = malloc(sizeof(FrameQueue));
-    fm->capacity = buffer_size;
-    fm->head = 0;
-    fm->tail = 0;
-    fm->size = 0;
-    fm->frame_size = frame_size;
+    FrameQueue *fq = malloc(sizeof(FrameQueue));
+    fq->capacity = buffer_size;
+    fq->head = 0;
+    fq->tail = 0;
+    fq->size = 0;
+    fq->frame_size = frame_size;
 
-    fm->queue = malloc(sizeof(uint8_t)*buffer_size);
+    fq->queue = malloc(sizeof(uint8_t)*buffer_size);
 
-    for (int i = 0; i < fm->capacity; i++)
+    for (int i = 0; i < fq->capacity; i++)
     {
-        fm->queue[i] = malloc(sizeof(uint8_t)*fm->frame_size);
+        fq->queue[i] = malloc(sizeof(uint8_t)*fq->frame_size);
     }
 
-    return fm;
+    pthread_mutex_init(&fq->lock, NULL);
+
+    return fq;
 }
 
-void framequeue_free(FrameQueue *fm) {
-    if (fm != NULL) 
+void framequeue_free(FrameQueue *fq) {
+    if (fq != NULL) 
     {
-        for (int i = 0; i < fm->capacity; i++)
+        for (int i = 0; i < fq->capacity; i++)
         {
-            free(fm->queue[i]);
+            free(fq->queue[i]);
         }
-        free(fm->queue);
-        free(fm);
+        pthread_mutex_destroy(&fq->lock);
+        free(fq->queue);
+        free(fq);
     }
 }
 
-void framequeue_enqueue(FrameQueue *fm, uint8_t *data) {
-    memcpy(fm->queue[fm->tail], data, fm->frame_size);
+void framequeue_enqueue(FrameQueue *fq, uint8_t *data) {
+    pthread_mutex_lock(&fq->lock);
 
-    fm->tail = (fm->tail + 1) % fm->capacity;
+    memcpy(fq->queue[fq->tail], data, fq->frame_size);
 
-    if (fm->size == fm->capacity)
+    fq->tail = (fq->tail + 1) % fq->capacity;
+
+    if (fq->size == fq->capacity)
     {
-        fm->head = (fm->head + 1) % fm->capacity;
+        fq->head = (fq->head + 1) % fq->capacity;
+        pthread_mutex_unlock(&fq->lock);
         return;
     }
 
-    fm->size += 1;
+    fq->size += 1;
+
+    pthread_mutex_unlock(&fq->lock);
 }
 
-bool framequeue_dequeue(FrameQueue *fm, uint8_t *data) {
-    if (fm->size == 0)
+bool framequeue_dequeue(FrameQueue *fq, uint8_t *data) {
+    pthread_mutex_lock(&fq->lock);
+    if (fq->size == 0)
     {
         return false;
     }
 
-    memcpy(data, fm->queue[fm->head], fm->frame_size);
+    memcpy(data, fq->queue[fq->head], fq->frame_size);
 
-    fm->head = (fm->head + 1) % fm->capacity;
-    fm->size -= 1;
+    fq->head = (fq->head + 1) % fq->capacity;
+    fq->size -= 1;
+
+    pthread_mutex_unlock(&fq->lock);
 
     return true;
 }
