@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#define MAX_SOURCES 9
+
 enum MType {
     T_NULL = 0,
     T_1X1,
@@ -26,7 +28,7 @@ typedef struct Sources {
 typedef struct ConfigFile {
     enum MType type;
     enum ErrType err;
-    Sources sources[T_3X3*T_3X3];
+    Sources sources[MAX_SOURCES];
 } ConfigFile;
 
 ConfigFile *read_config();
