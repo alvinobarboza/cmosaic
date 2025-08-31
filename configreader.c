@@ -61,6 +61,31 @@ ConfigFile *read_config() {
 
     cf->type = type.u.i;
 
+    uint8_t total_videos = cf->type * cf->type;
+
+    toml_array_t *videos = toml_table_array(data, "videos");
+
+    int length = toml_array_len(videos);
+	for (int i = 0; i < length; i++) {
+        if (length == total_videos) {
+            break;
+        }
+
+		toml_table_t *t = toml_array_table(videos, i);
+		toml_value_t name = toml_table_string(t, "name");
+		toml_value_t source = toml_table_string(t, "source");
+
+        cf->sources[i].name = name.ok ? name.u.s : "Error";
+        cf->sources[i].source = source.ok ? source.u.s : "";
+	}
+
+    for(uint8_t i = 0; i < total_videos; i++) {
+        if (cf->sources[i].name == NULL){
+            cf->sources[i].name = "NOT LOADED";
+            cf->sources[i].source = "";
+        }
+    }
+
     fclose(fptr);
     toml_free(data);
 
