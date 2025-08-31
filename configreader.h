@@ -30,3 +30,4 @@ typedef struct ConfigFile {
 } ConfigFile;
 
 ConfigFile *read_config();
+void print_error_hint(enum ErrType type); // TODO
