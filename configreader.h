@@ -13,7 +13,9 @@ enum ErrType {
     NO_ERR = 0,
     ERR_NO_FILE,
     ERR_FILE_TOO_BIG,
-    ERR_GETTING_TYPE
+    ERR_PARSING,
+    ERR_GETTING_TYPE,
+    ERR_WRONG_TYPE
 };
 
 typedef struct Sources {

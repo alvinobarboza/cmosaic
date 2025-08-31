@@ -2,28 +2,28 @@ type = 3
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "url://host"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "url://host"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "url://host"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "file://path"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "file://path"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "file://path"
 
 [[videos]]
 name = "teste"
-source = "udp:234.50.99.9:6000?overrun_nonfatal=1&fifo_size=1000000"
+source = "file://path"

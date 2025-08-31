@@ -9,7 +9,7 @@ int main(void) {
 
     ConfigFile *cf = read_config();
 
-    printf("%d \n\n",cf->type);
+    printf("%d %d\n\n",cf->type, cf->err);
 
     for (uint8_t i = 0; i < cf->type*cf->type; i++){
         printf("%d:name = %s \nsource = %s \n\n",

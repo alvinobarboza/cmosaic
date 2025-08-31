@@ -35,6 +35,9 @@ ConfigFile *read_config() {
     
     toml_table_t *data = toml_parse_file(fptr, errbuf, sizeof(errbuf));
     if (!data){
+        cf->type = T_NULL;
+        cf->err = ERR_PARSING;
+        
         printf("%s\n\n", errbuf);
         fclose(fptr);
         return cf;
@@ -52,7 +55,7 @@ ConfigFile *read_config() {
 
     if (type.u.i < T_1X1 || type.u.i > T_3X3) {
         cf->type = T_NULL;
-        cf->err = ERR_GETTING_TYPE;
+        cf->err = ERR_WRONG_TYPE;
         
         fclose(fptr);
         toml_free(data);
@@ -89,5 +92,6 @@ ConfigFile *read_config() {
     fclose(fptr);
     toml_free(data);
 
+    cf->err = NO_ERR;
     return cf;
 }
