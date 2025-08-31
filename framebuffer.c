@@ -10,8 +10,10 @@ FrameBuffer *framebuffer_new(uint32_t frame_size, FrameQueue *queue) {
 }
 
 void framebuffer_free(FrameBuffer *fb) {
-    free(fb->readBuf);
-    free(fb);
+    if (fb != NULL){
+        free(fb->readBuf);
+        free(fb);
+    }
 }
 
 void framebuffer_write_data(FrameBuffer *fb, uint8_t color) {
