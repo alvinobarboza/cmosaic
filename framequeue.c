@@ -2,6 +2,7 @@
 
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     buffer_size = buffer_size < MIN_FRAME_QUEUE ? MIN_FRAME_QUEUE : buffer_size;
+    buffer_size = buffer_size > MAX_FRAME_QUEUE ? MAX_FRAME_QUEUE : buffer_size;
 
     FrameQueue *fq = malloc(sizeof(FrameQueue));
     fq->capacity = buffer_size;
