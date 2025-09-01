@@ -9,7 +9,7 @@ build:
 ifeq ($(OS),Windows_NT)
 	gcc -std=c99 -Wall -Wextra -o bin/mosaic.exe ./all.c
 else
-	gcc -std=c99 -Wall -Wextra -o bin/mosaic ./all.c
+	gcc -std=c99 -Wall -Wextra -L./include/raylib/lib -lraylib -o bin/mosaic ./all.c
 endif
 
 # Target for building the project
@@ -18,7 +18,7 @@ release:
 ifeq ($(OS),Windows_NT)
 	gcc -std=c99 -O2 -Wall -Wextra -o bin/mosaic.exe ./all.c
 else
-	gcc -std=c99 -O2 -Wall -Wextra -o bin/mosaic ./all.c
+	gcc -std=c99 -O2 -Wall -Wextra -L./include/raylib/lib -lraylib -o bin/mosaic ./all.c
 endif
 
 # Target for cleaning up
