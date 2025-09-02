@@ -4,4 +4,5 @@
 #include "framebuffer.c"
 #include "configreader.c"
 #include "videodata.c"
+#include "ffprocess.c"
 #include "main.c"
