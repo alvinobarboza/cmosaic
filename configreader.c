@@ -92,8 +92,6 @@ ConfigFile *read_config() {
             source.ok ? source.u.s : ""
         );
 
-        printf("%d \n", t_loaded);
-
         if (name.ok) free(name.u.s);
         if (source.ok) free(source.u.s);
         
