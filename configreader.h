@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdint.h>
-
 #define MAX_SOURCES 9
+#define MAX_CHAR_LENGTH 255
+#define NOT_LOADED "NOT LOADED"
 
 enum MType {
     T_NULL = 0,
@@ -21,8 +21,8 @@ enum ErrType {
 };
 
 typedef struct Sources {
-    char *name;
-    char *source;
+    char name[MAX_CHAR_LENGTH];
+    char source[MAX_CHAR_LENGTH];
 } Sources;
 
 typedef struct ConfigFile {
@@ -32,4 +32,6 @@ typedef struct ConfigFile {
 } ConfigFile;
 
 ConfigFile *read_config();
+
+void configfile_source_strcpy(Sources *s, const char *name, const char *source);
 void print_error_hint(enum ErrType type); // TODO

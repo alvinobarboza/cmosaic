@@ -16,7 +16,7 @@ int main(void) {
             i, cf->sources[i].name, cf->sources[i].source);
     }
     
-    uint32_t frame_size = 1920*1080;
+    uint32_t frame_size = 10*10;
     
     FrameQueue *fq = framequeue_new(3, frame_size);
     FrameBuffer *fb = framebuffer_new(frame_size, fq);
@@ -38,9 +38,14 @@ int main(void) {
         }
     }
     
+    printf("\n%s %s\n", NOT_LOADED, cf->sources[8].name);
+
+    // cf->sources[8].name = "Teste";
     
-    free(cf);
+    printf("%s %s\n", NOT_LOADED, cf->sources[8].name);
+    
     free(frame_data);
+    free(cf);
     framequeue_free(fq);
     framebuffer_free(fb);
     puts("");

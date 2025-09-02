@@ -1,3 +1,6 @@
+#include <stdint.h>
+#include <string.h>
+
 #include "configreader.h"
 #include "include/toml-c/toml-c.h"
 
@@ -9,6 +12,11 @@ long get_file_size(const char* filename) {
     long size = ftell(file);
     fclose(file);
     return size;
+}
+
+void configfile_source_strcpy(Sources *s, const char *name, const char *source) {
+    strncpy(s->name, name, MAX_CHAR_LENGTH);
+    strncpy(s->source, source, MAX_CHAR_LENGTH);
 }
 
 ConfigFile *read_config() {
@@ -68,24 +76,33 @@ ConfigFile *read_config() {
 
     toml_array_t *videos = toml_table_array(data, "videos");
 
-    int length = toml_array_len(videos);
-	for (int i = 0; i < length; i++) {
-        if (length == total_videos) {
+    uint8_t length = toml_array_len(videos);
+    uint8_t t_loaded;
+	for (t_loaded = 0; t_loaded < length; t_loaded++) {
+        if (t_loaded == total_videos) {
             break;
         }
 
-		toml_table_t *t = toml_array_table(videos, i);
+		toml_table_t *t = toml_array_table(videos, t_loaded);
 		toml_value_t name = toml_table_string(t, "name");
 		toml_value_t source = toml_table_string(t, "source");
 
-        cf->sources[i].name = name.ok ? name.u.s : "Error";
-        cf->sources[i].source = source.ok ? source.u.s : "";
+        configfile_source_strcpy(
+            &cf->sources[t_loaded], 
+            name.ok ? name.u.s : "Error", 
+            source.ok ? source.u.s : ""
+        );
+
+        printf("%d \n", t_loaded);
+
+        if (name.ok) free(name.u.s);
+        if (source.ok) free(source.u.s);
+        
 	}
 
-    for(uint8_t i = 0; i < total_videos; i++) {
-        if (cf->sources[i].name == NULL){
-            cf->sources[i].name = "NOT LOADED";
-            cf->sources[i].source = "";
+    if (t_loaded < total_videos) {
+        for(uint8_t i = t_loaded; i < total_videos; i++) {
+                configfile_source_strcpy(&cf->sources[i], NOT_LOADED, NOT_LOADED);
         }
     }
 
