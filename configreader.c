@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 
 #include "configreader.h"
 #include "include/toml-c/toml-c.h"
@@ -15,8 +14,8 @@ long get_file_size(const char* filename) {
 }
 
 void configfile_source_strcpy(Sources *s, const char *name, const char *source) {
-    strncpy(s->name, name, MAX_CHAR_LENGTH);
-    strncpy(s->source, source, MAX_CHAR_LENGTH);
+    snprintf(s->name,MAX_CHAR_LENGTH, "%s",name);
+    snprintf(s->source,MAX_CHAR_LENGTH,"%s",source);
 }
 
 ConfigFile *read_config() {
