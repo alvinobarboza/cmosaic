@@ -4,6 +4,8 @@
 #include "framebuffer.h"
 #include "configreader.h"
 
+#define MAX_CMD_LENGTH 500
+
 typedef struct pThreadArgs {
     FrameBuffer *fb;
     Sources *s;

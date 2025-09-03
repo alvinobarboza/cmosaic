@@ -19,15 +19,21 @@ char *resolution(enum MType t) {
     } 
 }
 
+void make_cmd(char *cmd, const char *input, const char *resolution) {
+    snprintf(cmd, MAX_CMD_LENGTH, "ffmpeg -hide_banner -re -i '%s' -filter_complex '[0:v:0]scale=%s:flags=fast_bilinear,fps=fps=15,format=rgb24[vi]' -map '[vi]' -f rawvideo pipe:1", input, resolution);
+}
+
 void * init_ff_process(void * arguments) {
     pThreadArgs args = *(pThreadArgs *) arguments;
 
     FILE *fp;
-    uint8_t charout;
+    int16_t charout;
 
+    char command[MAX_CMD_LENGTH];
     char *res = resolution(args.type);
+    make_cmd(command, args.s->source, res);
 
-    fp = popen("ffmpeg -hide_banner -re -i 'udp:234.50.99.2:6000?overrun_nonfatal=1&fifo_size=1000000&localaddr=10.50.0.160' -filter_complex '[0:v:0]scale=120:30:flags=fast_bilinear,fps=fps=15,format=rgb24[vi]' -map '[vi]' -f rawvideo pipe:1", "r");
+    fp = popen(command, "r");
     if (fp==NULL){
         puts("Failed to start ffmpeg process!");
         pthread_exit(NULL);
