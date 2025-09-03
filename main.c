@@ -1,53 +1,109 @@
 #include <stdio.h>
 #include <time.h>
+
 #include "framequeue.h"
 #include "framebuffer.h"
 #include "configreader.h"
+#include "include/raylib/include/raylib.h"
+
+#define WIDTH 900
+#define HEIGHT 600
 
 int main(void) {
-    srand(time(NULL));
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN);
+    InitWindow(WIDTH, HEIGHT, "Mosaic Window");
+    
+    RenderTexture2D render_tex = LoadRenderTexture(WIDTH, HEIGHT);
+    Image img = GenImageColor(WIDTH, HEIGHT, BLACK);
+    Texture2D texture = LoadTextureFromImage(img);
 
-    ConfigFile *cf = read_config();
+    UnloadImage(img);
 
-    printf("%d %d\n\n",cf->type, cf->err);
+    Color pixels[WIDTH*HEIGHT];
 
-    for (uint8_t i = 0; i < cf->type*cf->type; i++){
-        printf("%d:name = %s \nsource = %s \n\n",
-            i, cf->sources[i].name, cf->sources[i].source);
+    uint16_t square_height = HEIGHT / 2;
+    uint16_t square_width = WIDTH / 2;
+
+    uint16_t off_x = square_width / 2;
+    uint16_t off_y = square_height / 2;
+
+    for (uint32_t i = 0; i < WIDTH*HEIGHT; i++) {
+        pixels[i].r = 10;
+        pixels[i].g = 50;
+        pixels[i].b = 100;
+        pixels[i].a = 255;
     }
-    
-    uint32_t frame_size = 10*10;
-    
-    FrameQueue *fq = framequeue_new(3, frame_size);
-    FrameBuffer *fb = framebuffer_new(frame_size, fq);
-    uint8_t *frame_data = malloc(sizeof(uint8_t) * frame_size);
-    
-    for (uint32_t i = 0; i < 10; i++)
-    {
-        for(uint32_t j = 0; j < frame_size; j++){
-            uint8_t r = rand() % 250;
-            framebuffer_write_data(fb, r);
+
+    for (uint16_t y = 0; y < square_height ; y++) {
+        for (uint16_t x = 0; x < square_width; x++) {
+            uint32_t i = (y+off_y)*WIDTH+(x+off_x);
+            pixels[i].r = (((x+off_x) * 100)/square_width) % 255;
+            pixels[i].g = (((y+off_y) * 100)/square_height) % 255;
+            pixels[i].b = 0;
+            pixels[i].a = 255;
         }
-        
-        if (i % 2 == 0) {
-            if(framequeue_dequeue(fq, frame_data)){
-                for(uint32_t j = 0; j < frame_size; j++){
-                    printf("rgb: %03d \r",frame_data[j]);
-                }
+    }
+
+    UpdateTexture(texture, pixels);
+    SetTargetFPS(90);
+
+    float tw = (float)WIDTH;
+    float th = (float)HEIGHT;
+
+    float hRatio = th / tw;
+    float wRatio = tw / th;
+
+    Vector2 origin = {
+        x: 0.0f,
+        y: 0.0f,
+    };
+    
+    while (!WindowShouldClose()) {
+        BeginTextureMode(render_tex);
+            ClearBackground(BLACK);
+            DrawTexture(texture,0,0,WHITE);
+        EndTextureMode();
+
+        if (IsWindowResized()) {
+            float w = (float) GetScreenWidth();
+            float h = (float) GetScreenHeight();
+            printf("cur w=%02f h=%02f\n", w,h);
+
+            if ((w/h) > wRatio) {
+                tw = h * wRatio;
+                th = h;
+                origin.x = (tw - w) / 2;
+                origin.y = 0;
             }
-        }
-    }
-    
-    printf("\n%s %s\n", NOT_LOADED, cf->sources[8].name);
 
-    // cf->sources[8].name = "Teste";
-    
-    printf("%s %s\n", NOT_LOADED, cf->sources[8].name);
-    
-    free(frame_data);
-    free(cf);
-    framequeue_free(fq);
-    framebuffer_free(fb);
-    puts("");
+            if ((h/w) > hRatio) {
+                th = w * hRatio;
+                tw = w;
+                origin.x = 0;
+                origin.y = (th - h) / 2;
+            }
+
+            printf("new w=%02f h=%02f\n", tw,th);
+        }
+            
+        BeginDrawing();
+            ClearBackground(BLACK);
+
+            DrawTexturePro(
+                render_tex.texture, 
+                (Rectangle){x:0, y:0, width: (float)WIDTH, height: -(float)HEIGHT}, 
+                (Rectangle){x:0, y:0, width: tw, height: th},
+                origin,
+                0.0f,
+                WHITE
+            );
+
+            DrawFPS(10, 10);
+        EndDrawing();
+    }
+
+    UnloadTexture(texture);
+    UnloadRenderTexture(render_tex);
+    CloseWindow();
     return 0;
 }
