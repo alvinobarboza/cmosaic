@@ -4,12 +4,20 @@
 #include "framequeue.h"
 #include "framebuffer.h"
 #include "configreader.h"
+#include "videodata.h"
 #include "include/raylib/include/raylib.h"
 
-#define WIDTH 900
-#define HEIGHT 600
+#define WIDTH 1920
+#define HEIGHT 1080
 
 int main(void) {
+    ConfigFile *confg = read_config();
+    uint32_t frame_size = WIDTH/confg->type*HEIGHT/confg->type*COLORS_CHANNEL;
+
+    FrameQueue *fq = framequeue_new(MAX_FRAME_QUEUE, frame_size);
+    // FrameBuffer *fb = framebuffer_new(frame_size, fq);
+    // VideoData *vd = videodata_new(&confg->sources[0], fq, (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},(Vec2){0});
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(WIDTH, HEIGHT, "Mosaic Window");
     
@@ -102,6 +110,8 @@ int main(void) {
         EndDrawing();
     }
 
+    free(confg);
+    framequeue_free(fq);
     UnloadTexture(texture);
     UnloadRenderTexture(render_tex);
     CloseWindow();

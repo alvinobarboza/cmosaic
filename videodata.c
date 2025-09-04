@@ -1,10 +1,10 @@
 #include "videodata.h"
 
-VideoData *videdata_new(Sources *s, FrameQueue *fq,  Vec2 res, Vec2 pos) {
+VideoData *videodata_new(Sources *s, FrameQueue *fq,  Vec2 res, Vec2 pos) {
     VideoData *vd = malloc(sizeof(VideoData));
     vd->queue = fq;
     vd->source = s;
-    vd->posisition = pos;
+    vd->position = pos;
     vd->resolution = res;
 
     vd->current_frame_buf = malloc(sizeof(uint8_t) * res.x * res.y * COLORS_CHANNEL);
@@ -26,7 +26,7 @@ void videodata_update_canvas(VideoData *vd, Color *canvas, uint32_t w, uint32_t 
         {
             for (uint32_t x = 0; x < vd->resolution.x*COLORS_CHANNEL; x+=3) 
             {
-                uint32_t index = (y+vd->posisition.y)*w+(x+vd->posisition.x);
+                uint32_t index = (y+vd->position.y)*w+(x+vd->position.x);
                 if (index >= w*h*COLORS_CHANNEL) {
                     continue;
                 }
