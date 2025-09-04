@@ -1,4 +1,5 @@
 #include "framequeue.h"
+#include <stdio.h>
 
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     buffer_size = buffer_size < MIN_FRAME_QUEUE ? MIN_FRAME_QUEUE : buffer_size;
@@ -11,15 +12,14 @@ FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     fq->size = 0;
     fq->frame_size = frame_size;
 
-    fq->queue = malloc(sizeof(uint8_t)*buffer_size);
+    fq->queue = malloc(sizeof(uint8_t*)*buffer_size);
 
-    for (int i = 0; i < fq->capacity; i++)
+    for (int i = 0; i < buffer_size; i++)
     {
-        fq->queue[i] = malloc(sizeof(uint8_t)*fq->frame_size);
+        fq->queue[i] = malloc(sizeof(uint8_t)*frame_size);
     }
 
-    fq->lock = malloc(sizeof(pthread_mutex_t));
-    pthread_mutex_init(fq->lock,NULL);
+    pthread_mutex_init(&fq->lock,NULL);
 
     return fq;
 }
@@ -31,15 +31,14 @@ void framequeue_free(FrameQueue *fq) {
         {
             free(fq->queue[i]);
         }
-        pthread_mutex_destroy(fq->lock);
-        free(fq->lock);
+        pthread_mutex_destroy(&fq->lock);
         free(fq->queue);
         free(fq);
     }
 }
 
 void framequeue_enqueue(FrameQueue *fq, uint8_t *data) {
-    pthread_mutex_lock(fq->lock);
+    pthread_mutex_lock(&fq->lock);
 
     memcpy(fq->queue[fq->tail], data, fq->frame_size);
 
@@ -48,17 +47,17 @@ void framequeue_enqueue(FrameQueue *fq, uint8_t *data) {
     if (fq->size == fq->capacity)
     {
         fq->head = (fq->head + 1) % fq->capacity;
-        pthread_mutex_unlock(fq->lock);
+        pthread_mutex_unlock(&fq->lock);
         return;
     }
 
     fq->size += 1;
 
-    pthread_mutex_unlock(fq->lock);
+    pthread_mutex_unlock(&fq->lock);
 }
 
 bool framequeue_dequeue(FrameQueue *fq, uint8_t *data) {
-    pthread_mutex_lock(fq->lock);
+    pthread_mutex_lock(&fq->lock);
     if (fq->size == 0)
     {
         return false;
@@ -69,7 +68,7 @@ bool framequeue_dequeue(FrameQueue *fq, uint8_t *data) {
     fq->head = (fq->head + 1) % fq->capacity;
     fq->size -= 1;
 
-    pthread_mutex_unlock(fq->lock);
+    pthread_mutex_unlock(&fq->lock);
 
     return true;
 }

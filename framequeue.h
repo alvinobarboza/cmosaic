@@ -16,7 +16,7 @@ typedef struct FrameQueue {
     uint8_t         size;
     uint8_t         **queue;
     uint32_t        frame_size;
-    pthread_mutex_t *lock;
+    pthread_mutex_t lock;
 } FrameQueue;
 
 FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size);

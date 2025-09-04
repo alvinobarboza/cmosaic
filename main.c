@@ -12,9 +12,19 @@
 
 int main(void) {
     ConfigFile *confg = read_config();
+    if (confg->err) {
+        printf("err: %d", confg->err);
+        return 1;
+    }
+
+    for (uint8_t i = 0; i < confg->type*confg->type; i++){
+        printf("input: %s\n", confg->sources[i].source);
+    }
+
     uint32_t frame_size = WIDTH/confg->type*HEIGHT/confg->type*COLORS_CHANNEL;
 
     FrameQueue *fq = framequeue_new(MAX_FRAME_QUEUE, frame_size);
+
     // FrameBuffer *fb = framebuffer_new(frame_size, fq);
     // VideoData *vd = videodata_new(&confg->sources[0], fq, (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},(Vec2){0});
 
