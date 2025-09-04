@@ -4,9 +4,14 @@
 #include "include/toml-c/toml-c.h"
 
 #define MAX_FILE_SIZE_BYTES 2000
+#define NOT_FOUND -1
 
 long get_file_size(const char* filename) {
     FILE* file = fopen(filename, "rb");
+    if (file == NULL) {
+        return NOT_FOUND;
+    }
+
     fseek(file, 0, SEEK_END);
     long size = ftell(file);
     fclose(file);
@@ -22,8 +27,16 @@ ConfigFile *read_config() {
     char file_name[] = "config.toml";
     
     ConfigFile *cf = malloc(sizeof(ConfigFile));
+
+    long file_check = get_file_size(file_name);
+
+    if (file_check == NOT_FOUND) {
+        cf->type = T_NULL;
+        cf->err = ERR_NO_FILE;
+        return cf;
+    }
     
-    if (get_file_size(file_name) > MAX_FILE_SIZE_BYTES){
+    if (file_check > MAX_FILE_SIZE_BYTES){
         cf->type = T_NULL;
         cf->err = ERR_FILE_TOO_BIG;
         return cf;
