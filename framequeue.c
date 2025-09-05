@@ -6,6 +6,10 @@ FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     buffer_size = buffer_size > MAX_FRAME_QUEUE ? MAX_FRAME_QUEUE : buffer_size;
 
     FrameQueue *fq = malloc(sizeof(FrameQueue));
+    if (fq == NULL){
+        return NULL;
+    }
+
     fq->capacity = buffer_size;
     fq->head = 0;
     fq->tail = 0;
@@ -13,13 +17,33 @@ FrameQueue *framequeue_new(uint8_t buffer_size, uint32_t frame_size) {
     fq->frame_size = frame_size;
 
     fq->queue = malloc(sizeof(uint8_t*)*buffer_size);
-
-    for (int i = 0; i < buffer_size; i++)
-    {
-        fq->queue[i] = malloc(sizeof(uint8_t)*frame_size);
+    if (fq->queue == NULL) {
+        free(fq);
+        return NULL;
     }
 
-    pthread_mutex_init(&fq->lock,NULL);
+    for (uint32_t i = 0; i < buffer_size; i++)
+    {
+        fq->queue[i] = malloc(sizeof(uint8_t)*frame_size);
+        if (fq->queue[i] == NULL) {
+            for (uint32_t j = 0; j < i; j++){
+                free(fq->queue[j]);
+            }
+            free(fq->queue);
+            free(fq);
+            return NULL;
+        }
+    }
+
+    if (pthread_mutex_init(&fq->lock,NULL) != 0) {
+        for (uint32_t i = 0; i < buffer_size; i++)
+        {
+            free(fq->queue[i]);
+        }
+        free(fq->queue);
+        free(fq);
+        return NULL;
+    }
 
     return fq;
 }
