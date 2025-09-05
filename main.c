@@ -5,6 +5,7 @@
 #include "framebuffer.h"
 #include "configreader.h"
 #include "videodata.h"
+#include "ffprocess.h"
 #include "include/raylib/include/raylib.h"
 
 #define WIDTH 1920
@@ -43,6 +44,18 @@ int main(void) {
         perror("Failed to init video data");
         return 1;
     }
+
+    pThreadArgs args = {
+        .fb = fb,
+        .s = &confg->sources[0],
+        .type = confg->type,
+        .screen_height = HEIGHT,
+        .screen_width = WIDTH,
+        .close = false,
+    };
+
+    pthread_t thread1;
+    pthread_create(&thread1, NULL, init_ff_process, (void *)&args);
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(WIDTH, HEIGHT, "Mosaic Window");
@@ -92,6 +105,7 @@ int main(void) {
         y: 0.0f,
     };
     
+    uint8_t fps_counter = 0;
     while (!WindowShouldClose()) {
         BeginTextureMode(render_tex);
             ClearBackground(BLACK);
@@ -134,7 +148,18 @@ int main(void) {
 
             DrawFPS(10, 10);
         EndDrawing();
+
+        if (fps_counter % 3 == 0) {
+            videodata_update_canvas(vd, pixels, WIDTH, HEIGHT);
+            UpdateTexture(texture, pixels);
+        }
+
+        fps_counter++;
     }
+    
+    args.close = true;
+
+    pthread_join(thread1, NULL);
 
     free(confg);
     videodata_free(vd);
