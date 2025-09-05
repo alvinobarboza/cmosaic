@@ -2,12 +2,20 @@
 
 VideoData *videodata_new(Sources *s, FrameQueue *fq,  Vec2 res, Vec2 pos) {
     VideoData *vd = malloc(sizeof(VideoData));
+    if (vd == NULL){
+        return NULL;
+    }
+
     vd->queue = fq;
     vd->source = s;
     vd->position = pos;
     vd->resolution = res;
 
     vd->current_frame_buf = malloc(sizeof(uint8_t) * res.x * res.y * COLORS_CHANNEL);
+    if (vd->current_frame_buf == NULL){
+        free(vd);
+        return NULL;
+    }
 
     return vd;
 }

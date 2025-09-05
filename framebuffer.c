@@ -2,10 +2,20 @@
 
 FrameBuffer *framebuffer_new(uint32_t frame_size, FrameQueue *queue) {
     FrameBuffer *fb = malloc(sizeof(FrameBuffer));
+    if (fb == NULL) {
+        return NULL;
+    }
+
     fb->color_index = 0;
     fb->frame_size = frame_size;
     fb->queue = queue;
     fb->readBuf = malloc(sizeof(uint8_t)*frame_size);
+    
+    if (fb->readBuf == NULL) {
+        free(fb);
+        return NULL;
+    }
+
     return fb;
 }
 

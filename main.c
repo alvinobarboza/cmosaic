@@ -29,8 +29,20 @@ int main(void) {
         return 1;
     }
 
-    // FrameBuffer *fb = framebuffer_new(frame_size, fq);
-    // VideoData *vd = videodata_new(&confg->sources[0], fq, (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},(Vec2){0});
+    FrameBuffer *fb = framebuffer_new(frame_size, fq);
+     if (fb == NULL){
+        framequeue_free(fq);
+        perror("Failed to init frame buffer");
+        return 1;
+    }
+
+    VideoData *vd = videodata_new(&confg->sources[0], fq, (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},(Vec2){0});
+    if (vd == NULL) {
+        framebuffer_free(fb);
+        framequeue_free(fq);
+        perror("Failed to init video data");
+        return 1;
+    }
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(WIDTH, HEIGHT, "Mosaic Window");
@@ -125,6 +137,8 @@ int main(void) {
     }
 
     free(confg);
+    videodata_free(vd);
+    framebuffer_free(fb);
     framequeue_free(fq);
     UnloadTexture(texture);
     UnloadRenderTexture(render_tex);
