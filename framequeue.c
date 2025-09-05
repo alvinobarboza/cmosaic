@@ -84,6 +84,7 @@ bool framequeue_dequeue(FrameQueue *fq, uint8_t *data) {
     pthread_mutex_lock(&fq->lock);
     if (fq->size == 0)
     {
+        pthread_mutex_unlock(&fq->lock);
         return false;
     }
 
