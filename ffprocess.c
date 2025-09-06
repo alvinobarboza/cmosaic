@@ -10,7 +10,7 @@ void resolution(char res[MAX_RES_LENGTH], enum MType t, uint16_t w, uint16_t h) 
 }
 
 void make_cmd(char *cmd, const char *input, const char *resolution) {
-    snprintf(cmd, MAX_CMD_LENGTH, "ffmpeg -hide_banner -re -stream_loop -1 -i '%s' -filter_complex '[0:v:0]scale=%s:flags=fast_bilinear,fps=fps=15,format=rgb24[vi]' -map '[vi]' -f rawvideo pipe:1", input, resolution);
+    snprintf(cmd, MAX_CMD_LENGTH, "ffmpeg -hide_banner -re -threads 1 -stream_loop -1 -i '%s' -threads 1 -filter_complex '[0:v:0]scale=%s:flags=fast_bilinear,format=rgb24[vi]' -map '[vi]' -f rawvideo pipe:1", input, resolution);
 }
 
 void * init_ff_process(void * arguments) {
