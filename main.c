@@ -73,29 +73,6 @@ int main(void) {
 
     Color pixels[WIDTH*HEIGHT];
 
-    uint16_t square_height = HEIGHT / 2;
-    uint16_t square_width = WIDTH / 2;
-
-    uint16_t off_x = square_width / 2;
-    uint16_t off_y = square_height / 2;
-
-    for (uint32_t i = 0; i < WIDTH*HEIGHT; i++) {
-        pixels[i].r = 10;
-        pixels[i].g = 50;
-        pixels[i].b = 100;
-        pixels[i].a = 255;
-    }
-
-    for (uint16_t y = 0; y < square_height ; y++) {
-        for (uint16_t x = 0; x < square_width; x++) {
-            uint32_t i = (y+off_y)*WIDTH+(x+off_x);
-            pixels[i].r = (((x+off_x) * 100)/square_width) % 255;
-            pixels[i].g = (((y+off_y) * 100)/square_height) % 255;
-            pixels[i].b = 0;
-            pixels[i].a = 255;
-        }
-    }
-
     UpdateTexture(texture, pixels);
     SetTargetFPS(90);
 
@@ -120,7 +97,6 @@ int main(void) {
         if (IsWindowResized()) {
             float w = (float) GetScreenWidth();
             float h = (float) GetScreenHeight();
-            printf("cur w=%02f h=%02f\n", w,h);
 
             if ((w/h) > wRatio) {
                 tw = h * wRatio;
@@ -135,8 +111,6 @@ int main(void) {
                 origin.x = 0;
                 origin.y = (th - h) / 2;
             }
-
-            printf("new w=%02f h=%02f\n", tw,th);
         }
             
         BeginDrawing();
