@@ -22,7 +22,7 @@ int main(void) {
         printf("input: %s\n", confg->sources[i].source);
     }
 
-    uint32_t frame_size = WIDTH/confg->type*HEIGHT/confg->type*COLORS_CHANNEL;
+    uint32_t frame_size = (WIDTH/confg->type)*(HEIGHT/confg->type)*COLORS_CHANNEL;
 
     FrameQueue *fq = framequeue_new(MAX_FRAME_QUEUE, frame_size);
     if (fq == NULL){
@@ -37,7 +37,12 @@ int main(void) {
         return 1;
     }
 
-    VideoData *vd = videodata_new(&confg->sources[0], fq, (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},(Vec2){0});
+    VideoData *vd = videodata_new(
+        &confg->sources[0], 
+        fq, 
+        (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},
+        (Vec2){0}
+    );
     if (vd == NULL) {
         framebuffer_free(fb);
         framequeue_free(fq);

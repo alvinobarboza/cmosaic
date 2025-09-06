@@ -34,14 +34,16 @@ void videodata_update_canvas(VideoData *vd, Color *canvas, uint32_t w, uint32_t 
         {
             for (uint32_t x = 0; x < vd->resolution.x*COLORS_CHANNEL; x+=3) 
             {
-                uint32_t index = (y+vd->position.y)*w+(x+vd->position.x);
-                if (index >= w*h*COLORS_CHANNEL) {
+                uint32_t i_video = y*vd->resolution.x*COLORS_CHANNEL+x;
+                uint32_t i_canvas = (y + vd->position.y) * w + x / COLORS_CHANNEL + vd->position.x;
+
+                if (i_canvas >= w*h*COLORS_CHANNEL || i_video+2 >= vd->queue->frame_size) {
                     continue;
                 }
-                canvas[index/COLORS_CHANNEL].r = vd->current_frame_buf[index+0];
-                canvas[index/COLORS_CHANNEL].g = vd->current_frame_buf[index+1];
-                canvas[index/COLORS_CHANNEL].b = vd->current_frame_buf[index+2];
-                canvas[index/COLORS_CHANNEL].a = 255;
+                canvas[i_canvas].r = vd->current_frame_buf[i_video+0];
+                canvas[i_canvas].g = vd->current_frame_buf[i_video+1];
+                canvas[i_canvas].b = vd->current_frame_buf[i_video+2];
+                canvas[i_canvas].a = 255;
             }
         }        
     }
