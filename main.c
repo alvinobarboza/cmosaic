@@ -6,7 +6,8 @@
 #include "configreader.h"
 #include "videodata.h"
 #include "ffprocess.h"
-#include "include/raylib/include/raylib.h"
+#include "videorunner.h"
+#include "raylib.h"
 
 #define WIDTH 1920
 #define HEIGHT 1080
@@ -17,50 +18,15 @@ int main(void) {
         printf("err: %d", confg->err);
         return 1;
     }
-
+    
     for (uint8_t i = 0; i < confg->type*confg->type; i++){
         printf("input: %s\n", confg->sources[i].source);
     }
-
-    uint32_t frame_size = (WIDTH/confg->type)*(HEIGHT/confg->type)*COLORS_CHANNEL;
-
-    FrameQueue *fq = framequeue_new(MAX_FRAME_QUEUE, frame_size);
-    if (fq == NULL){
-        perror("Failed to init frame queue");
+    
+    if (!videorunner_init(confg, WIDTH, HEIGHT)){
+        free(confg);
         return 1;
     }
-
-    FrameBuffer *fb = framebuffer_new(frame_size, fq);
-     if (fb == NULL){
-        framequeue_free(fq);
-        perror("Failed to init frame buffer");
-        return 1;
-    }
-
-    VideoData *vd = videodata_new(
-        &confg->sources[0], 
-        fq, 
-        (Vec2){x:WIDTH/confg->type,y:HEIGHT/confg->type},
-        (Vec2){0}
-    );
-    if (vd == NULL) {
-        framebuffer_free(fb);
-        framequeue_free(fq);
-        perror("Failed to init video data");
-        return 1;
-    }
-
-    pThreadArgs args = {
-        .fb = fb,
-        .s = &confg->sources[0],
-        .type = confg->type,
-        .screen_height = HEIGHT,
-        .screen_width = WIDTH,
-        .close = false,
-    };
-
-    pthread_t thread1;
-    pthread_create(&thread1, NULL, init_ff_process, (void *)&args);
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_MSAA_4X_HINT | FLAG_WINDOW_ALWAYS_RUN);
     InitWindow(WIDTH, HEIGHT, "Mosaic Window");
@@ -129,21 +95,31 @@ int main(void) {
         EndDrawing();
 
         if (fps_counter % 3 == 0) {
-            videodata_update_canvas(vd, pixels, WIDTH, HEIGHT);
+            for (size_t i = 0; i < MAX_SOURCES; i++) {
+                if (task[i].arg != NULL){
+                    videodata_update_canvas(task[i].vd, pixels, WIDTH, HEIGHT);
+                }
+            }
             UpdateTexture(texture, pixels);
         }
 
         fps_counter++;
     }
-    
-    args.close = true;
 
-    pthread_join(thread1, NULL);
+    for (size_t i = 0; i < MAX_SOURCES; i++) {
+        if (task[i].arg != NULL) {
+            task[i].arg->close = true;
+        }
+    }  
+
+    for (size_t i = 0; i < MAX_SOURCES; i++) {
+        if (task[i].arg != NULL) {
+            pthread_join(task[i].thread, NULL);
+        }
+    }
 
     free(confg);
-    videodata_free(vd);
-    framebuffer_free(fb);
-    framequeue_free(fq);
+    
     UnloadTexture(texture);
     UnloadRenderTexture(render_tex);
     CloseWindow();

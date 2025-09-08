@@ -112,7 +112,7 @@ ConfigFile *read_config() {
 
     if (t_loaded < total_videos) {
         for(uint8_t i = t_loaded; i < total_videos; i++) {
-                configfile_source_strcpy(&cf->sources[i], NOT_LOADED, NOT_LOADED);
+            configfile_source_strcpy(&cf->sources[i], NOT_LOADED, NOT_LOADED);
         }
     }
 
