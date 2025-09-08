@@ -60,7 +60,7 @@ bool videorunner_init( ConfigFile *config, uint16_t w , uint16_t h ) {
             }
 
             task[i].vd = videodata_new(
-                &config->sources[0], 
+                &config->sources[i], 
                 task[i].fq, 
                 (Vec2){x:w/config->type,y:h/config->type},
                 position_index(config->type, i, w, h)
@@ -77,7 +77,7 @@ bool videorunner_init( ConfigFile *config, uint16_t w , uint16_t h ) {
             }
 
             task[i].arg->fb = task[i].fb;
-            task[i].arg->s = &config->sources[0];
+            task[i].arg->s = &config->sources[i];
             task[i].arg->type = config->type;
             task[i].arg->screen_height = h;
             task[i].arg->screen_width = w;
