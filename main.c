@@ -15,7 +15,7 @@
 int main(void) {
     ConfigFile *confg = read_config();
     if (confg->err) {
-        printf("err: %d", confg->err);
+        print_error_hint(confg->err);
         return 1;
     }
     

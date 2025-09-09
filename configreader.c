@@ -87,6 +87,14 @@ ConfigFile *read_config() {
     uint8_t total_videos = cf->type * cf->type;
 
     toml_array_t *videos = toml_table_array(data, "videos");
+    if (videos == 0){
+        cf->type = T_NULL;
+        cf->err = ERR_PARSING;
+        
+        fclose(fptr);
+        toml_free(data);
+        return cf;
+    }
 
     uint8_t length = toml_array_len(videos);
     uint8_t t_loaded;
@@ -121,4 +129,64 @@ ConfigFile *read_config() {
 
     cf->err = NO_ERR;
     return cf;
+}
+
+void print_error_hint(enum ErrType type) {
+    switch (type)
+    {
+    case ERR_NO_FILE:
+        puts("\nError: file do not exists");
+		puts("Make sure the config file(config.toml) is present in the working path.");
+		puts("/woking/path/");
+		puts("├── mosaic");
+		puts("└── config.toml\n");
+        break;
+    case ERR_FILE_TOO_BIG:
+        puts("Error: file too big");
+        break;
+    case ERR_PARSING:
+        puts("\n\nMake sure it is a toml(https://toml.io/en/) file using the params below;");
+        puts("");
+        puts("------------config.toml----------------");
+        puts("type = 0 \n\t-> Supported values > 1 = 1x1, 2 = 2x2, 3 = 3x3");
+        puts("");
+        puts("[[videos]] -> Sources list");
+        puts("name = \"name\" \n\t-> To be shown in the screen");
+        puts("source = \"source\" \n\t-> Same as to be used in ffmpeg, case UDP, can/should be passed the url params, like \"localaddr\", fifo_size or any other, if necessary");
+        puts("---------------------------------------");
+        puts("");
+        puts("E.g: ");
+        puts("");
+        puts("");
+        puts("type = 2");
+        puts("");
+        puts("[[videos]]");
+        puts("name = \"Channel\"");
+        puts("source = \"udp:0.0.0.0:0000[?params]\" ");
+        puts("");
+        puts("[[videos]]");
+        puts("name = \"Channel\"");
+        puts("source = \"udp:0.0.0.0:0000[?params]\" ");
+        puts("");
+        puts("[[videos]]");
+        puts("name = \"Streaming\"");
+        puts("source = \"https://url[?params]\" ");
+        puts("");
+        puts("[[videos]]");
+        puts("name = \"Streaming\"");
+        puts("source = \"https://url[?params]\" ");
+        puts("\n");
+        break;
+    case ERR_GETTING_TYPE:
+    case ERR_WRONG_TYPE:
+        puts("\nError: getting mosaic type");
+        puts("Given layout on \"type\" is different from expected!");
+        puts("Possible values;");
+        puts("1 = 1x1 : Same as fullscreen");
+        puts("2 = 2x2 : 4 video/streaming");
+        puts("3 = 3x3 : 9 video/streaming\n");
+        break;
+    default:
+        break;
+    }
 }
