@@ -6,6 +6,7 @@
 
 #define MAX_RES_LENGTH 12
 #define MAX_CMD_LENGTH 500
+#define PROCESS_BUFF_SIZE 3*50
 
 typedef struct pThreadArgs {
     FrameBuffer *fb;
