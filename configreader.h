@@ -34,4 +34,4 @@ typedef struct ConfigFile {
 ConfigFile *read_config();
 
 void configfile_source_strcpy(Sources *s, const char *name, const char *source);
-void print_error_hint(enum ErrType type); // TODO
+void print_error_hint(enum ErrType type);
