@@ -17,3 +17,7 @@ mkdir bin && make release && ./bin/mosaic
 Make sure to have ffmpeg avaliable in your shell, ether by installing it or in your "envirioment". GCC also.
 
 Any other dependency will be from Raylib, since I'm using it to display the pixels on screen. But raylib is compiled statically here.
+
+# Screeshot of running application in a 3x3 layout
+
+![3x3 mosaic layout](/mosaic_view.png?raw=true '3x3 mosaic layout')
